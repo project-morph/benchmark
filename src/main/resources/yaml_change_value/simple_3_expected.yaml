@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-service-b
+  labels:
+    app: web-service-b
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-service-b
+  template:
+    metadata:
+      labels:
+        app: web-service-b
+    spec:
+      containers:
+        - name: web-container
+          image: your-registry/web-service-b:1.2.3
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: api-url
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
