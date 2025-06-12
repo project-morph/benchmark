@@ -41,14 +41,14 @@ spec:
                   key: api-url
             - name: LOG_LEVEL
               value: "info"
-#            - name: LOG_LEVEL
-#              value: "debug"
-#            - name: LEGACY_FLAG
-#              value: "true"
-#            - name: DEPRECATED_TIMEOUT
-#              value: "5000"
-#            - name: EXPERIMENTAL_FEATURE
-#              value: "true"
+          #            - name: LOG_LEVEL
+          #              value: "debug"
+          #            - name: LEGACY_FLAG
+          #              value: "true"
+          #            - name: DEPRECATED_TIMEOUT
+          #              value: "5000"
+          #            - name: EXPERIMENTAL_FEATURE
+          #              value: "true"
 
           resources:
             requests:
@@ -57,15 +57,15 @@ spec:
             limits:
               cpu: "1"
               memory: "1Gi"
-#            requests:
-#              cpu: "100m"
-#              memory: "256Mi"
-#            limits:
-#              cpu: "500m"
-#              memory: "512Mi"
-#            limits:
-#              cpu: "1"
-#              memory: "1Gi"
+          #            requests:
+          #              cpu: "100m"
+          #              memory: "256Mi"
+          #            limits:
+          #              cpu: "500m"
+          #              memory: "512Mi"
+          #            limits:
+          #              cpu: "1"
+          #              memory: "1Gi"
 
           readinessProbe:
             httpGet:
