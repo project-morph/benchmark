@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
   test:
@@ -34,9 +35,10 @@ jobs:
             build/reports/tests/test
             build/test-results/test
       - name: Publish Test Results
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
+          artifact: test-reports
           name: Gradle Tests
           path: build/test-results/test/*.xml
-          reporter: junit
+          reporter: java-junit
