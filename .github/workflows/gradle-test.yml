@@ -42,5 +42,5 @@ jobs:
         with:
           artifact: test-reports
           name: Gradle Tests
-          path: build/test-results/test/*.xml
+          path: test-results/test/*.xml
           reporter: java-junit
