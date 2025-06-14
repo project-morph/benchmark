@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.github.java-diff-utils:java-diff-utils:4.15")
     testImplementation(kotlin("test"))
 }
 

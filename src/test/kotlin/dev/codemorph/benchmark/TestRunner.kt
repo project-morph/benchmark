@@ -1,5 +1,6 @@
 package dev.codemorph.benchmark
 
+import com.github.difflib.DiffUtils
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.fail
 import java.io.File
@@ -38,7 +39,15 @@ object TestRunner {
                 val actual = actualFile.readText()
 
                 if (expected != actual) {
-                    fail("Mismatch in $baseName: \nExpected:\n$expected\n\nActual:\n$actual")
+                    val patch = DiffUtils.diff(expected.lines(), actual.lines())
+
+                    val diffOutput = patch.deltas.joinToString("\n") { delta ->
+                        """
+                            Actual: ${delta.source.lines}
+                            Expect: ${delta.target.lines}
+                        """.trimIndent()
+                    }
+                    fail("Mismatch in test scenario $baseName\n$diffOutput")
                 }
             }
         }
