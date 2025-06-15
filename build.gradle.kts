@@ -10,7 +10,9 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.java-diff-utils:java-diff-utils:4.15")
+    implementation("io.getunleash:unleash-client-java:10.2.2")
+
+    testImplementation("io.github.java-diff-utils:java-diff-utils:4.15")
     testImplementation(kotlin("test"))
 }
 
