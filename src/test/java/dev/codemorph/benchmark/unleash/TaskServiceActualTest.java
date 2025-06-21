@@ -7,7 +7,9 @@ class TaskServiceActualTest {
 
     @Test
     void getRelevantTaskIds() {
-        var instance = new TaskServiceActual();
+        var unleash = mock(Unleash.class);
+        when(unleash.isEnabled(anyString())).thenReturn(true);
+        var instance = new TaskServiceActual(unleash);
 
         assertEquals(3, instance.getRelevantTaskIds().size());
     }
