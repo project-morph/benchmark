@@ -3,8 +3,8 @@ package dev.codemorph.benchmark
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.TestFactory
 
-class TestYamlChangeValue {
+class TestJavaUnleashFeatureFlags {
     @TestFactory
     @Disabled
-    fun testYamlChangeValue() = TestRunner.runCase("src/main/resources/yaml_change_value")
+    fun testJavaUnleashFeatureFlags() = TestRunner.runCase("src/main/java/dev/codemorph/benchmark/unleash")
 }

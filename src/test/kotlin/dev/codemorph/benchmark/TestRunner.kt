@@ -4,31 +4,53 @@ import com.github.difflib.DiffUtils
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.fail
 import java.io.File
-import java.nio.file.Paths
 
 object TestRunner {
 
-    private val resourcesDir = Paths.get("src/main/resources").toFile()
+    fun runCase(casePath: String): Collection<DynamicTest> {
+        val caseDir = File(casePath)
+        require(caseDir.exists() && caseDir.isDirectory) { "Missing test folder: $casePath" }
 
-    fun runCase(caseName: String): Collection<DynamicTest> {
-        val caseDir = File(resourcesDir, caseName)
-        require(caseDir.exists() && caseDir.isDirectory) { "Missing test folder: $caseName" }
-
-        val displayNamePrefix = extractDisplayName(caseDir) ?: caseName
+        val displayNamePrefix = extractDisplayName(caseDir) ?: caseDir.name
 
         val files = caseDir.listFiles { f -> f.isFile }?.toList() ?: emptyList()
 
-        val expectedMap = files
-            .filter { it.name.contains("_expected.") }
-            .associateBy {
-                it.name.substringBefore("_expected.")
+        // Temporarily allow nullable pair values
+        val filePairs = mutableMapOf<String, Pair<File?, File?>>()
+
+        for (file in files) {
+            val name = file.name
+            when {
+                "_expected." in name -> {
+                    val base = name.substringBefore("_expected.")
+                    val current = filePairs[base]
+                    filePairs[base] = Pair(file, current?.second)
+                }
+                "_actual." in name -> {
+                    val base = name.substringBefore("_actual.")
+                    val current = filePairs[base]
+                    filePairs[base] = Pair(current?.first, file)
+                }
+                name.matches(Regex(".*Expected\\.[^/\\\\]+$")) -> {
+                    val base = name.replaceFirst("Expected", "")
+                    val current = filePairs[base]
+                    filePairs[base] = Pair(file, current?.second)
+                }
+                name.matches(Regex(".*Actual\\.[^/\\\\]+$")) -> {
+                    val base = name.replaceFirst("Actual", "")
+                    val current = filePairs[base]
+                    filePairs[base] = Pair(current?.first, file)
+                }
             }
+        }
 
-        return expectedMap.map { (baseName, expectedFile) ->
-            val expectedSuffix = expectedFile.name.substringAfter("_expected.")
-            val actualFile = File(caseDir, "${baseName}_actual.$expectedSuffix")
+        return filePairs.mapNotNull { (base, pair) ->
+            val expectedFile = pair.first
+            val actualFile = pair.second
+            if (expectedFile == null || actualFile == null) return@mapNotNull null
 
-            val testDisplayName = "$displayNamePrefix - $baseName.$expectedSuffix"
+            val suffix = expectedFile.extension
+            val testDisplayName = "$displayNamePrefix - $base$suffix"
 
             DynamicTest.dynamicTest(testDisplayName) {
                 if (!actualFile.exists()) {
@@ -40,14 +62,13 @@ object TestRunner {
 
                 if (expected != actual) {
                     val patch = DiffUtils.diff(expected.lines(), actual.lines())
-
                     val diffOutput = patch.deltas.joinToString("\n") { delta ->
                         """
                             Actual: ${delta.source.lines}
                             Expect: ${delta.target.lines}
                         """.trimIndent()
                     }
-                    fail("Mismatch in test scenario $baseName\n$diffOutput")
+                    fail("Mismatch in test scenario $base\n$diffOutput")
                 }
             }
         }
@@ -59,5 +80,4 @@ object TestRunner {
         return desc.readLines().firstOrNull { it.trim().startsWith("#") }
             ?.removePrefix("#")?.trim()
     }
-
 }
