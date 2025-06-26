@@ -1,15 +1,15 @@
-package dev.codemorph.benchmark.unleash;
+package dev.codemorph.benchmark.unleash.expected;
 
 import io.getunleash.Unleash;
 
 import java.util.List;
 import java.util.UUID;
 
-public class TaskServiceExpected {
+public class TaskServiceActual {
 
     private final Unleash unleash;
 
-    public TaskServiceExpected(Unleash unleash) {
+    public TaskServiceActual(Unleash unleash) {
         this.unleash = unleash;
     }
 

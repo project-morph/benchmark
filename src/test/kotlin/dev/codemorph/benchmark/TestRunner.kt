@@ -4,6 +4,7 @@ import com.github.difflib.DiffUtils
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.fail
 import java.io.File
+import java.io.FileFilter
 
 object TestRunner {
 
@@ -12,10 +13,8 @@ object TestRunner {
         require(caseDir.exists() && caseDir.isDirectory) { "Missing test folder: $casePath" }
 
         val displayNamePrefix = extractDisplayName(caseDir) ?: caseDir.name
-
         val files = caseDir.listFiles { f -> f.isFile }?.toList() ?: emptyList()
 
-        // Temporarily allow nullable pair values
         val filePairs = mutableMapOf<String, Pair<File?, File?>>()
 
         for (file in files) {
@@ -52,24 +51,55 @@ object TestRunner {
             val suffix = expectedFile.extension
             val testDisplayName = "$displayNamePrefix - $base$suffix"
 
-            DynamicTest.dynamicTest(testDisplayName) {
-                if (!actualFile.exists()) {
-                    fail("Missing actual file for: ${expectedFile.name}")
-                }
+            compareFiles(testDisplayName, expectedFile, actualFile, skipFirstLine = false)
+        }
+    }
 
-                val expected = expectedFile.readText()
-                val actual = actualFile.readText()
+    fun runCaseJava(expectedDirPath: String, actualDirPath: String): Collection<DynamicTest> {
+        val expectedDir = File(expectedDirPath)
+        val actualDir = File(actualDirPath)
 
-                if (expected != actual) {
-                    val patch = DiffUtils.diff(expected.lines(), actual.lines())
-                    val diffOutput = patch.deltas.joinToString("\n") { delta ->
-                        """
-                            Actual: ${delta.source.lines}
-                            Expect: ${delta.target.lines}
-                        """.trimIndent()
-                    }
-                    fail("Mismatch in test scenario $base\n$diffOutput")
+        require(expectedDir.exists() && expectedDir.isDirectory) { "Missing expected dir: $expectedDirPath" }
+        require(actualDir.exists() && actualDir.isDirectory) { "Missing actual dir: $actualDirPath" }
+
+        val expectedFiles =
+            expectedDir.listFiles(FileFilter { it.isFile && it.extension == "java" }) ?: return emptyList()
+        val actualFilesMap =
+            actualDir.listFiles(FileFilter { it.isFile && it.extension == "java" })?.associateBy { it.name }
+                ?: emptyMap()
+
+        val displayNamePrefix = "${expectedDir.name} vs ${actualDir.name}"
+
+        return expectedFiles.mapNotNull { expected ->
+            val actual = actualFilesMap[expected.name] ?: return@mapNotNull null
+            val testDisplayName = "$displayNamePrefix - ${expected.name}"
+
+            compareFiles(testDisplayName, expected, actual, skipFirstLine = true)
+        }
+    }
+
+    private fun compareFiles(
+        displayName: String,
+        expectedFile: File,
+        actualFile: File,
+        skipFirstLine: Boolean
+    ): DynamicTest {
+        return DynamicTest.dynamicTest(displayName) {
+            val expectedLines = expectedFile.readLines()
+            val actualLines = actualFile.readLines()
+
+            val expected = if (skipFirstLine) expectedLines.drop(1) else expectedLines
+            val actual = if (skipFirstLine) actualLines.drop(1) else actualLines
+
+            if (expected != actual) {
+                val patch = DiffUtils.diff(expected, actual)
+                val diffOutput = patch.deltas.joinToString("\n") { delta ->
+                    """
+                        Actual: ${delta.source.lines}
+                        Expect: ${delta.target.lines}
+                    """.trimIndent()
                 }
+                fail("Mismatch in test: $displayName\n$diffOutput")
             }
         }
     }
