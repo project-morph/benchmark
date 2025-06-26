@@ -1,7 +1,6 @@
 package dev.codemorph.benchmark.unleash.expected;
 
 import io.getunleash.Unleash;
-
 import java.util.List;
 import java.util.UUID;
 
