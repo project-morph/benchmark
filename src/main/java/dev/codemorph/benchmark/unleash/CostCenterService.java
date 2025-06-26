@@ -1,11 +1,13 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class CostCenterService {
   private final Map<String, Double> centers = new HashMap<>();
   private final List<String> logs = new ArrayList<>();
   private final String status = "ACTIVE";
+  private final Unleash unleash;
 
   public String addCostCenter(String name, double cost) {
     if (FeatureFlags.isFlagEnabled("cost-center-add-enabled")) {

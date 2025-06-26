@@ -1,11 +1,13 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class CampaignManager {
   private final Set<String> campaigns = new HashSet<>();
   private final List<String> logs = new ArrayList<>();
   private final String status = "READY";
+  private final Unleash unleash;
 
   public String launchCampaign(String name) {
     if (FeatureFlags.isFlagEnabled("campaign-launch-enabled")) {

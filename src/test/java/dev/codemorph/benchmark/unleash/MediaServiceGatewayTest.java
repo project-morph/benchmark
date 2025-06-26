@@ -2,12 +2,16 @@ package dev.codemorph.benchmark.unleash;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.getunleash.Unleash;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class MediaServiceGatewayTest {
   @Test
   void getMediaUrl() {
-    var instance = new MediaServiceGateway();
+    Unleash unleash = Mockito.mock(Unleash.class);
+    Mockito.when(unleash.isEnabled("media-service-enabled")).thenReturn(true);
+    var instance = new MediaServiceGateway(unleash);
     assertEquals("https://media.example.com/resource", instance.getMediaUrl());
   }
 }
