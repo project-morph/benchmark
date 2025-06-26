@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 class TaskServiceActualTest {
 
-    @Test
-    void getRelevantTaskIds() {
-        var instance = new TaskServiceActual();
+  @Test
+  void getRelevantTaskIds() {
+    var instance = new TaskServiceActual();
 
-        assertEquals(3, instance.getRelevantTaskIds().size());
-    }
+    assertEquals(3, instance.getRelevantTaskIds().size());
+  }
 }
