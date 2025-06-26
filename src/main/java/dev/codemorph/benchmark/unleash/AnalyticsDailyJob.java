@@ -1,5 +1,6 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class AnalyticsDailyJob {
@@ -7,8 +8,14 @@ public class AnalyticsDailyJob {
   private int stats = 0;
   private final String status = "READY";
 
+  private final Unleash unleash;
+
+  public AnalyticsDailyJob(Unleash unleash) {
+    this.unleash = unleash;
+  }
+
   public String runJob() {
-    if (FeatureFlags.isFlagEnabled("analytics-job-enabled")) {
+    if (unleash.isEnabled("analytics-job-enabled")) {
       logAnalytics("Job started");
       stats++;
       return "Job completed";
@@ -18,7 +25,7 @@ public class AnalyticsDailyJob {
   }
 
   public String getReport() {
-    if (FeatureFlags.isFlagEnabled("report-generation-enabled")) {
+    if (unleash.isEnabled("report-generation-enabled")) {
       String report = "Report: " + stats;
       reports.add(report);
       return report;
@@ -28,7 +35,7 @@ public class AnalyticsDailyJob {
   }
 
   public void logAnalytics(String message) {
-    if (FeatureFlags.isFlagEnabled("analytics-logging-enabled")) {
+    if (unleash.isEnabled("analytics-logging-enabled")) {
       reports.add(message);
     }
   }

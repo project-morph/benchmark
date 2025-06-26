@@ -1,5 +1,6 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class ProjectWorkflowService {
@@ -7,8 +8,14 @@ public class ProjectWorkflowService {
   private int projectCount = 0;
   private final String status = "IDLE";
 
+  private final Unleash unleash;
+
+  public ProjectWorkflowService(Unleash unleash) {
+    this.unleash = unleash;
+  }
+
   public String startProject(String name) {
-    if (FeatureFlags.isFlagEnabled("project-start-enabled")) {
+    if (unleash.isEnabled("project-start-enabled")) {
       logAction("Started project: " + name);
       projectCount++;
       return "Project started: " + name;
@@ -18,7 +25,7 @@ public class ProjectWorkflowService {
   }
 
   public String completeTask(String task) {
-    if (FeatureFlags.isFlagEnabled("task-complete-enabled")) {
+    if (unleash.isEnabled("task-complete-enabled")) {
       logAction("Completed task: " + task);
       return "Task completed: " + task;
     } else {
@@ -27,7 +34,7 @@ public class ProjectWorkflowService {
   }
 
   public void logAction(String action) {
-    if (FeatureFlags.isFlagEnabled("workflow-logging-enabled")) {
+    if (unleash.isEnabled("workflow-logging-enabled")) {
       actions.add(action);
     }
   }

@@ -1,5 +1,6 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class LLMApiGateway {
@@ -7,13 +8,16 @@ public class LLMApiGateway {
   private final List<String> logs = new ArrayList<>();
   private final String status = "OK";
 
-  public LLMApiGateway() {
+  private final Unleash unleash;
+
+  public LLMApiGateway(Unleash unleash) {
     quota.put("user1", 100);
     quota.put("user2", 200);
+    this.unleash = unleash;
   }
 
   public String callModel(String user, String prompt) {
-    if (FeatureFlags.isFlagEnabled("llm-call-enabled")) {
+    if (unleash.isEnabled("llm-call-enabled")) {
       logRequest(user, prompt);
       return "Response for: " + prompt;
     } else {
@@ -22,7 +26,7 @@ public class LLMApiGateway {
   }
 
   public int getQuota(String user) {
-    if (FeatureFlags.isFlagEnabled("quota-check-enabled")) {
+    if (unleash.isEnabled("quota-check-enabled")) {
       return quota.getOrDefault(user, 0);
     } else {
       return -1;
@@ -30,7 +34,7 @@ public class LLMApiGateway {
   }
 
   public void logRequest(String user, String prompt) {
-    if (FeatureFlags.isFlagEnabled("logging-enabled")) {
+    if (unleash.isEnabled("logging-enabled")) {
       logs.add(user + ": " + prompt);
     }
   }
@@ -48,7 +52,7 @@ public class LLMApiGateway {
   }
 
   public boolean isPremiumUser(String user) {
-    if (FeatureFlags.isFlagEnabled("premium-check-enabled")) {
+    if (unleash.isEnabled("premium-check-enabled")) {
       return user.startsWith("premium");
     } else {
       return false;
