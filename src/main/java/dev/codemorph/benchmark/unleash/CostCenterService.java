@@ -1,5 +1,6 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class CostCenterService {
@@ -7,8 +8,14 @@ public class CostCenterService {
   private final List<String> logs = new ArrayList<>();
   private final String status = "ACTIVE";
 
+  private Unleash unleash;
+
+  public CostCenterService(Unleash unleash) {
+    this.unleash = unleash;
+  }
+
   public String addCostCenter(String name, double cost) {
-    if (FeatureFlags.isFlagEnabled("cost-center-add-enabled")) {
+    if (unleash.isEnabled("cost-center-add-enabled")) {
       centers.put(name, cost);
       logCostEvent("Added: " + name);
       return "Cost center added: " + name;
@@ -18,7 +25,7 @@ public class CostCenterService {
   }
 
   public double getCost(String name) {
-    if (FeatureFlags.isFlagEnabled("cost-check-enabled")) {
+    if (unleash.isEnabled("cost-check-enabled")) {
       return centers.getOrDefault(name, 0.0);
     } else {
       return -1.0;
@@ -26,7 +33,7 @@ public class CostCenterService {
   }
 
   public void logCostEvent(String event) {
-    if (FeatureFlags.isFlagEnabled("cost-logging-enabled")) {
+    if (unleash.isEnabled("cost-logging-enabled")) {
       logs.add(event);
     }
   }

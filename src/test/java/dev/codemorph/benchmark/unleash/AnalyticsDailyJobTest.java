@@ -1,13 +1,17 @@
 package dev.codemorph.benchmark.unleash;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
+import io.getunleash.Unleash;
 import org.junit.jupiter.api.Test;
 
 class AnalyticsDailyJobTest {
   @Test
   void runJob() {
-    var instance = new AnalyticsDailyJob();
+    Unleash unleash = mock(Unleash.class);
+    when(unleash.isEnabled(anyString())).thenReturn(true);
+    var instance = new AnalyticsDailyJob(unleash);
     assertEquals("Job completed", instance.runJob());
   }
 }

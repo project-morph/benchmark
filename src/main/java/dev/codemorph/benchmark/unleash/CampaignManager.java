@@ -1,5 +1,6 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class CampaignManager {
@@ -7,8 +8,14 @@ public class CampaignManager {
   private final List<String> logs = new ArrayList<>();
   private final String status = "READY";
 
+  private Unleash unleash;
+
+  public CampaignManager(Unleash unleash) {
+    this.unleash = unleash;
+  }
+
   public String launchCampaign(String name) {
-    if (FeatureFlags.isFlagEnabled("campaign-launch-enabled")) {
+    if (unleash.isEnabled("campaign-launch-enabled")) {
       campaigns.add(name);
       logCampaignEvent("Launched: " + name);
       return "Campaign launched: " + name;
@@ -18,7 +25,7 @@ public class CampaignManager {
   }
 
   public String getCampaignStatus(String name) {
-    if (FeatureFlags.isFlagEnabled("campaign-status-check-enabled")) {
+    if (unleash.isEnabled("campaign-status-check-enabled")) {
       return campaigns.contains(name) ? "active" : "inactive";
     } else {
       return "Status check disabled";
@@ -26,7 +33,7 @@ public class CampaignManager {
   }
 
   public void logCampaignEvent(String event) {
-    if (FeatureFlags.isFlagEnabled("campaign-logging-enabled")) {
+    if (unleash.isEnabled("campaign-logging-enabled")) {
       logs.add(event);
     }
   }

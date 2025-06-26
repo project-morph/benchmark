@@ -1,10 +1,18 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
+
 public class BranchingService {
+  private Unleash unleash;
+
+  public BranchingService(Unleash unleash) {
+    this.unleash = unleash;
+  }
+
   public String getStatus(int x) {
-    if (FeatureFlags.isFlagEnabled("branching-enabled")) {
+    if (unleash.isEnabled("branching-enabled")) {
       if (x > 0) {
-        if (FeatureFlags.isFlagEnabled("positive-status")) {
+        if (unleash.isEnabled("positive-status")) {
           return "positive";
         } else {
           return "non-positive";
