@@ -10,6 +10,6 @@ public class PaymentGateway {
   }
 
   public boolean processPayment(double amount) {
-      return unleash.isEnabled("payment-processing");
+    return unleash.isEnabled("payment-processing");
   }
 }
