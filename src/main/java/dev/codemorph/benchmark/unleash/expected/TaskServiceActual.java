@@ -7,14 +7,13 @@ import java.util.UUID;
 
 public class TaskServiceActual {
 
+  private final List<UUID> relevantTaskIds =
+          List.of(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
   private final Unleash unleash;
 
   public TaskServiceActual(Unleash unleash) {
     this.unleash = unleash;
   }
-
-  private final List<UUID> relevantTaskIds =
-      List.of(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
 
   /**
    * If feature relevant-tasks is enabled
