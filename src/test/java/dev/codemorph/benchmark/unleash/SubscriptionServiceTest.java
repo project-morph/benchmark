@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 class SubscriptionServiceTest {
   @Test
   void getSubscriptionStatus() {
-    var instance = new SubscriptionService();
+    var unleash = org.mockito.Mockito.mock(io.getunleash.Unleash.class);
+    org.mockito.Mockito.when(unleash.isEnabled("subscription-active")).thenReturn(true);
+    var instance = new SubscriptionService(unleash);
     assertEquals("active", instance.getSubscriptionStatus());
   }
 }
