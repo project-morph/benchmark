@@ -10,9 +10,9 @@ public class LLMApiGateway {
   private final Unleash unleash;
 
   public LLMApiGateway(Unleash unleash) {
-    this.unleash = unleash;
     quota.put("user1", 100);
     quota.put("user2", 200);
+    this.unleash = unleash;
   }
 
   public String callModel(String user, String prompt) {
