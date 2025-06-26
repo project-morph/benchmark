@@ -1,13 +1,18 @@
 package dev.codemorph.benchmark.unleash;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import io.getunleash.Unleash;
 import org.junit.jupiter.api.Test;
 
 class BonusProgramManagerTest {
   @Test
   void activateBonus() {
-    var instance = new BonusProgramManager();
+    var unleash = mock(Unleash.class);
+    when(unleash.isEnabled("bonus-activation-enabled")).thenReturn(true);
+    var instance = new BonusProgramManager(unleash);
     assertEquals("Bonus activated for: Carol", instance.activateBonus("Carol"));
   }
 }
