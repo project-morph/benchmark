@@ -1,13 +1,19 @@
 package dev.codemorph.benchmark.unleash;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import io.getunleash.Unleash;
 import org.junit.jupiter.api.Test;
 
 class LLMApiGatewayTest {
   @Test
   void callModel() {
-    var instance = new LLMApiGateway();
+    Unleash unleash = mock(Unleash.class);
+    when(unleash.isEnabled(anyString())).thenReturn(true);
+    var instance = new LLMApiGateway(unleash);
     assertEquals("Response for: test", instance.callModel("user1", "test"));
   }
 }
