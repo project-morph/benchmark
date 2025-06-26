@@ -1,19 +1,23 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
+
 import java.util.*;
 
 public class LLMApiGateway {
   private final Map<String, Integer> quota = new HashMap<>();
   private final List<String> logs = new ArrayList<>();
   private final String status = "OK";
+  private final Unleash unleash;
 
-  public LLMApiGateway() {
+  public LLMApiGateway(Unleash unleash) {
+    this.unleash = unleash;
     quota.put("user1", 100);
     quota.put("user2", 200);
   }
 
   public String callModel(String user, String prompt) {
-    if (FeatureFlags.isFlagEnabled("llm-call-enabled")) {
+    if (unleash.isEnabled("llm-call-enabled")) {
       logRequest(user, prompt);
       return "Response for: " + prompt;
     } else {
@@ -22,7 +26,7 @@ public class LLMApiGateway {
   }
 
   public int getQuota(String user) {
-    if (FeatureFlags.isFlagEnabled("quota-check-enabled")) {
+    if (unleash.isEnabled("quota-check-enabled")) {
       return quota.getOrDefault(user, 0);
     } else {
       return -1;
@@ -30,7 +34,7 @@ public class LLMApiGateway {
   }
 
   public void logRequest(String user, String prompt) {
-    if (FeatureFlags.isFlagEnabled("logging-enabled")) {
+    if (unleash.isEnabled("logging-enabled")) {
       logs.add(user + ": " + prompt);
     }
   }

@@ -1,14 +1,20 @@
 package dev.codemorph.benchmark.unleash;
 
 import java.util.*;
+import io.getunleash.Unleash;
 
 public class BonusProgramManager {
   private final Map<String, Integer> points = new HashMap<>();
   private final List<String> events = new ArrayList<>();
   private final String status = "ENABLED";
+  private final Unleash unleash;
+
+  public BonusProgramManager(Unleash unleash) {
+    this.unleash = unleash;
+  }
 
   public String activateBonus(String user) {
-    if (FeatureFlags.isFlagEnabled("bonus-activation-enabled")) {
+    if (unleash.isEnabled("bonus-activation-enabled")) {
       points.put(user, points.getOrDefault(user, 0) + 10);
       logBonusEvent("Activated bonus for: " + user);
       return "Bonus activated for: " + user;
@@ -18,7 +24,7 @@ public class BonusProgramManager {
   }
 
   public int getBonusPoints(String user) {
-    if (FeatureFlags.isFlagEnabled("bonus-points-check-enabled")) {
+    if (unleash.isEnabled("bonus-points-check-enabled")) {
       return points.getOrDefault(user, 0);
     } else {
       return -1;
@@ -26,7 +32,7 @@ public class BonusProgramManager {
   }
 
   public void logBonusEvent(String event) {
-    if (FeatureFlags.isFlagEnabled("bonus-logging-enabled")) {
+    if (unleash.isEnabled("bonus-logging-enabled")) {
       events.add(event);
     }
   }
