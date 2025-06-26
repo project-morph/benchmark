@@ -1,11 +1,13 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class BonusProgramManager {
   private final Map<String, Integer> points = new HashMap<>();
   private final List<String> events = new ArrayList<>();
   private final String status = "ENABLED";
+  private final Unleash unleash;
 
   public String activateBonus(String user) {
     if (FeatureFlags.isFlagEnabled("bonus-activation-enabled")) {

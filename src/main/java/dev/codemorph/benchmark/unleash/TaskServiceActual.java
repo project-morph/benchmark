@@ -1,5 +1,6 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,6 +8,7 @@ public class TaskServiceActual {
 
   private final List<UUID> relevantTaskIds =
       List.of(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+  private final Unleash unleash;
 
   /**
    * If feature relevant-tasks is enabled

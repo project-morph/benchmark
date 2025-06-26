@@ -1,13 +1,16 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class LLMApiGateway {
   private final Map<String, Integer> quota = new HashMap<>();
   private final List<String> logs = new ArrayList<>();
   private final String status = "OK";
+  private final Unleash unleash;
 
-  public LLMApiGateway() {
+  public LLMApiGateway(Unleash unleash) {
+    this.unleash = unleash;
     quota.put("user1", 100);
     quota.put("user2", 200);
   }
