@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.1.10"
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 group = "dev.codemorph"
@@ -19,4 +20,11 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+spotless {
+    java {
+        googleJavaFormat("1.17.0")
+        target("src/**/*.java")
+    }
 }
