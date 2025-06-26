@@ -1,14 +1,20 @@
 package dev.codemorph.benchmark.unleash;
 
+import io.getunleash.Unleash;
 import java.util.*;
 
 public class InvitationHandler {
   private final Set<String> pending = new HashSet<>();
+  private final Unleash unleash;
   private final List<String> logs = new ArrayList<>();
   private final String status = "OPEN";
 
+  public InvitationHandler(Unleash unleash) {
+    this.unleash = unleash;
+  }
+
   public String sendInvitation(String email) {
-    if (FeatureFlags.isFlagEnabled("invitation-send-enabled")) {
+    if (unleash.isEnabled("invitation-send-enabled")) {
       pending.add(email);
       logInvitation("Sent to: " + email);
       return "Invitation sent to: " + email;
@@ -18,7 +24,7 @@ public class InvitationHandler {
   }
 
   public String acceptInvitation(String email) {
-    if (FeatureFlags.isFlagEnabled("invitation-accept-enabled")) {
+    if (unleash.isEnabled("invitation-accept-enabled")) {
       pending.remove(email);
       logInvitation("Accepted by: " + email);
       return "Invitation accepted: " + email;
@@ -28,7 +34,7 @@ public class InvitationHandler {
   }
 
   public void logInvitation(String event) {
-    if (FeatureFlags.isFlagEnabled("invitation-logging-enabled")) {
+    if (unleash.isEnabled("invitation-logging-enabled")) {
       logs.add(event);
     }
   }
